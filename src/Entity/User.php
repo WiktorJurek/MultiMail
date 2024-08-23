@@ -37,6 +37,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $surname = null;
 
+    #[ORM\OneToMany(targetEntity: UserCategory::class, mappedBy: 'user')]
+    private $userCategories;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,6 +135,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSurname(string $surname): static
     {
         $this->surname = $surname;
+
+        return $this;
+    }
+
+    public function getUserCategories()
+    {
+        return $this->userCategories;
+    }
+
+    public function addUserCategory(UserCategory $userCategory): self
+    {
+        if (!$this->userCategories->contains($userCategory)) {
+            $this->userCategories[] = $userCategory;
+            $userCategory->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserCategory(UserCategory $userCategory): self
+    {
+        if ($this->userCategories->removeElement($userCategory)) {
+            // Set the owning side to null (unless already changed)
+            if ($userCategory->getUser() === $this) {
+                $userCategory->setUser(null);
+            }
+        }
 
         return $this;
     }

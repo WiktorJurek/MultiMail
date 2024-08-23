@@ -16,8 +16,8 @@ class Category
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $content = null;
+    #[ORM\OneToMany(targetEntity: UserCategory::class, mappedBy: 'category')]
+    private $userCategories;
 
     public function getId(): ?int
     {
@@ -36,14 +36,29 @@ class Category
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getUserCategories()
     {
-        return $this->content;
+        return $this->userCategories;
     }
 
-    public function setContent(string $content): static
+    public function addUserCategory(UserCategory $userCategory): self
     {
-        $this->content = $content;
+        if (!$this->userCategories->contains($userCategory)) {
+            $this->userCategories[] = $userCategory;
+            $userCategory->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserCategory(UserCategory $userCategory): self
+    {
+        if ($this->userCategories->removeElement($userCategory)) {
+            // Set the owning side to null (unless already changed)
+            if ($userCategory->getCategory() === $this) {
+                $userCategory->setCategory(null);
+            }
+        }
 
         return $this;
     }
