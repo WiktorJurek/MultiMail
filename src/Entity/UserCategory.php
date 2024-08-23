@@ -9,26 +9,35 @@ use Doctrine\ORM\Mapping as ORM;
 class UserCategory
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
 
-    #[ORM\Column]
-    private ?int $id_category = null;
+    #[ORM\Id]
+    #[ORM\ManyToOne(targetEntity: Category::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private Category $category;
 
-    public function getId(): ?int
+    public function getUser(): User
     {
-        return $this->id;
+        return $this->user;
     }
 
-    public function getIdCategory(): ?int
+    public function setUser(User $user): self
     {
-        return $this->id_category;
+        $this->user = $user;
+
+        return $this;
     }
 
-    public function setIdCategory(int $id_category): static
+    public function getCategory(): Category
     {
-        $this->id_category = $id_category;
+        return $this->category;
+    }
+
+    public function setCategory(Category $category): self
+    {
+        $this->category = $category;
 
         return $this;
     }
