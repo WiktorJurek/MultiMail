@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
@@ -18,6 +20,22 @@ class Category
 
     #[ORM\OneToMany(targetEntity: UserCategory::class, mappedBy: 'category')]
     private $userCategories;
+
+    /**
+     * @var Collection<int, MailCampaign>
+     */
+    #[ORM\ManyToMany(targetEntity: MailCampaign::class, mappedBy: 'categories')]
+    private Collection $mailCampaigns;
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function __construct()
+    {
+        $this->mailCampaigns = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -58,6 +76,33 @@ class Category
             if ($userCategory->getCategory() === $this) {
                 $userCategory->setCategory(null);
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, MailCampaign>
+     */
+    public function getMailCampaigns(): Collection
+    {
+        return $this->mailCampaigns;
+    }
+
+    public function addMailCampaign(MailCampaign $mailCampaign): static
+    {
+        if (!$this->mailCampaigns->contains($mailCampaign)) {
+            $this->mailCampaigns->add($mailCampaign);
+            $mailCampaign->addCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMailCampaign(MailCampaign $mailCampaign): static
+    {
+        if ($this->mailCampaigns->removeElement($mailCampaign)) {
+            $mailCampaign->removeCategory($this);
         }
 
         return $this;

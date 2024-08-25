@@ -21,7 +21,7 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $numUsers = 10;
+        $numUsers = 100;
 
         for ($i = 0; $i < $numUsers; $i++) {
             $name = $this->faker->firstName;
